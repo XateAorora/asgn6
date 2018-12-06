@@ -43,3 +43,30 @@ int main(int argc, char *argv[]){
     close(output);
     return 1;
 }
+
+int cd(char *pth){
+    char path[INPUTLIMIT];
+    char *NewLine = strchr(pth, '\n');
+    if(NewLine) {
+        *NewLine = '\0';
+    }
+    strcpy(path,pth);
+    char cwd[INPUTLIMIT];
+    if(pth[0] != '/'){ /*directory in cwd*/
+        getcwd(cwd,sizeof(cwd));
+        strcat(cwd,"/");
+        strcat(cwd,path);
+        int a = chdir(cwd);
+        if (a == -1){
+            return 1;
+        }
+    }
+    else{
+        int b=chdir(pth);
+        if (b == -1){
+            perror("chdir");
+            return 1;
+        }
+    }
+    return 0;
+}
