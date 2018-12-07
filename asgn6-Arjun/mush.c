@@ -13,7 +13,7 @@ static int interrupted = 0;
 
 static void handlr(int signum)
 {
-    currentstage = STAGELIMIT + 1;
+    interrupted = 1;
 }
 
 int main(int argc, char *argv[]){
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 	int i;
 	int output = -1;
 	int input = -1;
-	for(i = 0; stages[i] != NULL; i++){
+	for(i = 0; stages[i] != NULL || interrupted == 0; i++){
 	    if(stages[i + 1] != NULL){
 		if(pipe(curPipe) == -1){
 		    perror("Pipe Fails\n");
