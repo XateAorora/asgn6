@@ -76,10 +76,10 @@ while (exited == 0){
 	   	sigprocmask(SIG_UNBLOCK, &x, NULL)
 		execvp(stages[i]->argumentVar[0], stages[i]->argumentVar);
 	    }else{
-		sigprocmask(SIG_UNBLOCK, &x, NULL)
 		int check;
 		close(prevPipe[0]);
 		close(prevPipe[1]);
+		sigprocmask(SIG_UNBLOCK, &x, NULL)
 		waitpid(childAddress, &check, WCONTINUED);
 		printf("Process Complete\n");
 		if(pipe(prevPipe) == -1){
