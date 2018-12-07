@@ -24,11 +24,11 @@ while (exited == 0){    // MARKER
     sigaction(SIGINT, &sahint, NULL);
     int terminal = dup(1);
     int keyboard = dup(0);
-    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){  // MARKER
-	    printf("8-D ");
+    char orig[INPUTLIMIT + 1] = {'\0'};  // MARKER
+    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){  
+	   printf("8-D ");
+ 	   fgets(orig, INPUTLIMIT + 2, stdin);
     }
-    char orig[INPUTLIMIT + 1] = {'\0'};
-    fgets(orig, INPUTLIMIT + 2, stdin);
     exited = feof(stdin);     // MARKER
     if(!strcmp(orig, "end\n")){
 	return 1;
@@ -96,8 +96,10 @@ while (exited == 0){    // MARKER
 	
 	dup2(keyboard, STDIN_FILENO);
 	dup2(terminal, STDOUT_FILENO);
+	if (interrupted != 1){  //MARKER
 	printf("8-D ");
 	fgets(orig, INPUTLIMIT + 2, stdin);
+	}
     }while(strcmp(orig, "end\n"));
 }
     return 1;
