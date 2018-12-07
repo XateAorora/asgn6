@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
 	
 	dup2(keyboard, STDIN_FILENO);
 	dup2(terminal, STDOUT_FILENO);
-	if (exited != 1){  //MARKER
+	if (exited == 0){  //MARKER
 	printf("8-D ");
 	fgets(orig, INPUTLIMIT + 2, stdin);
 	}
