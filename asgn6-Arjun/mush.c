@@ -18,7 +18,6 @@ static void handlr(int signum)
 }
 
 int main(int argc, char *argv[]){
-while (exited == 0){    // MARKER
     struct sigaction sahint;
     sahint.sa_handler = handlr;
     sigaction(SIGINT, &sahint, NULL);
@@ -100,10 +99,9 @@ while (exited == 0){    // MARKER
 	printf("8-D ");
 	fgets(orig, INPUTLIMIT + 2, stdin);
 	}
-    }while(strcmp(orig, "end\n"));
+    }while(strcmp(orig, "end\n")); //while (exited == 0);
 }
     return 1;
-}   // MARKER
 
 int cd(char *pth){
     char path[INPUTLIMIT];
