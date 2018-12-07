@@ -10,7 +10,7 @@
 #define INPUTLIMIT 512
 
 static int interrupted = 0;
-static int exited = 0;
+static int exited = 0;   // MARKER
 
 static void handlr(int signum)
 {
@@ -18,18 +18,18 @@ static void handlr(int signum)
 }
 
 int main(int argc, char *argv[]){
-while (exited == 0){
+while (exited == 0){    // MARKER
     struct sigaction sahint;
     sahint.sa_handler = handlr;
     sigaction(SIGINT, &sahint, NULL);
     int terminal = dup(1);
     int keyboard = dup(0);
-    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){
+    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){  // MARKER
 	    printf("8-D ");
     }
     char orig[INPUTLIMIT + 1] = {'\0'};
     fgets(orig, INPUTLIMIT + 2, stdin);
-    exited = feof(stdin);
+    exited = feof(stdin);     // MARKER
     if(!strcmp(orig, "end\n")){
 	return 1;
     }
@@ -101,7 +101,7 @@ while (exited == 0){
     }while(strcmp(orig, "end\n"));
 }
     return 1;
-}
+}   // MARKER
 
 int cd(char *pth){
     char path[INPUTLIMIT];
