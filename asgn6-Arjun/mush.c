@@ -5,10 +5,21 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 #include "stage.h"
 #define INPUTLIMIT 512
 
+static int currentStage = 0;
+
+static void handlr(int signum)
+{
+    currentstage = STAGELIMIT + 1;
+}
+
 int main(int argc, char *argv[]){
+    struct sigaction sahint;
+    sahint.sa_handler = handlr;
+    sigaction(SIGINT, &sahint, NULL);
     int terminal = dup(1);
     int keyboard = dup(0);
     if (isatty(fileno(stdin)) || isatty(fileno(stdout))){
@@ -62,6 +73,7 @@ int main(int argc, char *argv[]){
 	   	sigprocmask(SIG_UNBLOCK, &x, NULL)
 		execvp(stages[i]->argumentVar[0], stages[i]->argumentVar);
 	    }else{
+		sigprocmask(SIG_UNBLOCK, &x, NULL)
 		int check;
 		close(prevPipe[0]);
 		close(prevPipe[1]);
