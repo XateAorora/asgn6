@@ -10,6 +10,7 @@
 #define INPUTLIMIT 512
 
 static int interrupted = 0;
+static int exited = 0;
 
 static void handlr(int signum)
 {
@@ -17,6 +18,7 @@ static void handlr(int signum)
 }
 
 int main(int argc, char *argv[]){
+while (exited == 0){
     struct sigaction sahint;
     sahint.sa_handler = handlr;
     sigaction(SIGINT, &sahint, NULL);
@@ -27,6 +29,7 @@ int main(int argc, char *argv[]){
     }
     char orig[INPUTLIMIT + 1] = {'\0'};
     fgets(orig, INPUTLIMIT + 2, stdin);
+    exited = feof(stdin);
     if(!strcmp(orig, "end\n")){
 	return 1;
     }
@@ -96,6 +99,7 @@ int main(int argc, char *argv[]){
 	printf("8-D ");
 	fgets(orig, INPUTLIMIT + 2, stdin);
     }while(strcmp(orig, "end\n"));
+}
     return 1;
 }
 
