@@ -33,7 +33,9 @@ while (exited == 0){    // MARKER
     if(!strcmp(orig, "end\n")){
 	return 1;
     }
-    
+    	sigset_t x;
+        sigemptyset (&x);
+        sigaddset(&x, SIGINT);
     do{
 	int prevPipe[2] = { 0 };
 	int curPipe[2] = { 0 };
@@ -49,9 +51,7 @@ while (exited == 0){    // MARKER
 		}
 	    }
 	/*sigproc mask will happen right before fork*/
-	sigset_t x;
-        sigemptyset (&x);
-        sigaddset(&x, SIGINT);
+
         sigprocmask(SIG_BLOCK, &x, NULL)
 	    if((childAddress = fork()) == 0){
 		if(i){
