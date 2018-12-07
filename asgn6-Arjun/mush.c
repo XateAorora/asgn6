@@ -96,7 +96,7 @@ while (exited == 0){    // MARKER
 	
 	dup2(keyboard, STDIN_FILENO);
 	dup2(terminal, STDOUT_FILENO);
-	if (interrupted != 1){  //MARKER
+	if (exited != 1){  //MARKER
 	printf("8-D ");
 	fgets(orig, INPUTLIMIT + 2, stdin);
 	}
