@@ -9,7 +9,7 @@
 #include "stage.h"
 #define INPUTLIMIT 512
 
-static int currentStage = 0;
+static int interrupted = 0;
 
 static void handlr(int signum)
 {
