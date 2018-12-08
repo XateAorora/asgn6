@@ -28,6 +28,7 @@ int fileRead(char *output, int input){
 	    return 1;
 	}
     }
+    exited = 1;
     return -1;
 }
 
@@ -46,13 +47,12 @@ int main(int argc, char *argv[]){
     sigaction(SIGINT, &sahint, NULL);
     int terminal = dup(1);
     int keyboard = dup(0);
-    if ((isatty(fileno(stdin)) || isatty(fileno(stdout))) && (argc == 1)){
-	    printf("8-D ");
-    }
     char orig[INPUTLIMIT + 1] = {'\0'};
-    if(argc == 1){
-	(fgets(orig, INPUTLIMIT + 2, stdin));
-    }else{
+    if ((isatty(fileno(stdin)) || isatty(fileno(stdout))) && (argc == 1)){
+	printf("8-D ");
+	fgets(orig, INPUTLIMIT + 2, stdin);
+    }
+    else{
 	fileRead(orig, filePtr);
     }
     exited = feof(stdin);
