@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "stage.h"
 #define INPUTLIMIT 512
+#define PIPELIMIT 10
+#define ARGLIMIT 10
 
 struct stage *createStage(int stageN){
     struct stage *stg = (struct stage *) malloc(sizeof(struct stage));
@@ -21,7 +23,7 @@ struct stage *createStage(int stageN){
 struct stage *pipePrint(int pipeNum, char *input, char *output,
                 char *pipeLine){
         int i = 0, countSpace = 0;
-        char **argumentsList = (char **) malloc(sizeof(char *) * 10);
+        char **argumentsList = (char **) malloc(sizeof(char *) * ARGLIMIT);
         struct stage *stg = createStage(pipeNum);
         
         printf("--------\nStage %i: \"%s\"\n--------\n", pipeNum, pipeLine);
@@ -86,7 +88,7 @@ char *copyToSpace(char *source, char *copy){
 
 struct stage **correctString(char *string){
     int countPipes = 0, i = 0; /*number of pipes, for looping*/
-    char *pipesList[10] = { NULL };
+    char *pipesList[PIPELIMIT] = { NULL };
     char *cursor = string, *cur = string;
     char *program = malloc(sizeof(char) * 257);
     char *input = malloc(sizeof(char) * 257);
@@ -182,7 +184,7 @@ int scanline(char *line){
             }
         }else if(*scan != ' '){
             paramater = 1;
-            if(++arguments > 10){
+            if(++arguments > ARGLIMIT){
                 /*too many arguments*/
                 printf("%s: too many arguments\n", program);
                 return 0;
@@ -240,7 +242,7 @@ int scanline(char *line){
                 }
             }
             if(*scan == '|'){
-                if(++numPipes > 10){
+                if(++numPipes > PIPELIMIT){
                     /*Too many pipes*/
                     printf("pipeline too deep");
                     return 0;
