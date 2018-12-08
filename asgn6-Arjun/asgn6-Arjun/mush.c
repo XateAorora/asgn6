@@ -123,8 +123,8 @@ int main(int argc, char *argv[]){
 	
 	dup2(keyboard, STDIN_FILENO);
 	dup2(terminal, STDOUT_FILENO);
-	if (exit == 0){
-		if (argv[2] !=NULL){
+	if (exited == 0){
+		if (argv[1] !=NULL){
 			//read from file: if EOF, exit = 1;
 		}
 		else{
