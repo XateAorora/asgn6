@@ -72,14 +72,12 @@ int main(int argc, char *argv[]){
 	exited = fillToSpace(orig, fileDiscriptor);
     }else{
 	do{
+	    orig[0] = 0;
 	    interrupted = 0;
 	    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){
 		printf("8-D ");
 	    }
 	    fgets(orig, INPUTLIMIT + 2, stdin);
-	    if(exited == 1){
-		return 0;
-	    }
 	}while((exited == 0 && interrupted == 1) || orig[0] == 10);
 	exited = feof(stdin);
 	//printf("\n%i\n", orig[0]);
@@ -171,6 +169,7 @@ int main(int argc, char *argv[]){
 		exited = fillToSpace(orig, fileDiscriptor);
 	    }else{
 		do{
+		    orig[0] = 0;
 		    interrupted = 0;
 		    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){
 			printf("8-D ");
