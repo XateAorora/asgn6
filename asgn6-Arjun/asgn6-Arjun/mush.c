@@ -28,7 +28,6 @@ int fileRead(char *output, int input){
 	    return 1;
 	}
     }
-    exited = 1;
     return -1;
 }
 
