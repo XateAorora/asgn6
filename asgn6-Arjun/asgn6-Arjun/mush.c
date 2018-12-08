@@ -16,21 +16,6 @@ static int exited = 0;   // MARKER
 static void handlr(int signum);
 int cd(char *path);
 
-int fileRead(char *output, int input);
-
-int fileRead(char *output, int input){
-    char wordHold[INPUTLIMIT + 1] = {'\0'};
-    int i = 0;
-    for(; i < INPUTLIMIT ; i++){
-	read(input, &(wordHold[i]), sizeof(char));
-	if(wordHold[i] == '\n' || wordHold[i] == '\0' || wordHold[i] == EOF){
-	    output = wordHold;
-	    return 1;
-	}
-    }
-    return -1;
-}
-
 static void handlr(int signum)
 {
     interrupted = 1;
@@ -52,7 +37,7 @@ int main(int argc, char *argv[]){
 	fgets(orig, INPUTLIMIT + 2, stdin);
     }
     else{
-	fileRead(orig, filePtr);
+	//read from file
     }
     exited = feof(stdin);
     if(!strcmp(orig, "end\n")){
@@ -140,9 +125,7 @@ int main(int argc, char *argv[]){
 	dup2(terminal, STDOUT_FILENO);
 	if (exit == 0){
 		if (argv[2] !=NULL){
-			if (fileRead(orig, filePtr) == -1){
-				exited = 1;	
-			}
+			//read from file: if EOF, exit = 1;
 		}
 		else{
 	    		printf("8-D ");
