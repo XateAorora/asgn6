@@ -24,20 +24,20 @@ struct stage *pipePrint(int pipeNum, char *input, char *output,
         char **argumentsList = (char **) malloc(sizeof(char *) * 10);
         struct stage *stg = createStage(pipeNum);
         
-        //printf("--------\nStage %i: \"%s\"\n--------\n", pipeNum, pipeLine);
+        printf("--------\nStage %i: \"%s\"\n--------\n", pipeNum, pipeLine);
         /*check if or if not a pipe*/
         if(input == NULL){
-	  //printf("     input: pipe from stage %i\n", pipeNum - 1);
+            printf("     input: pipe from stage %i\n", pipeNum - 1);
         }else{
-	  //printf("     input: %s\n", input);
+            printf("     input: %s\n", input);
 	    if(strcmp(input, "original stdin")){
 	        stg->input = input;
 	    }
         }
         if(output == NULL){
-	  //printf("    output: pipe to stage %i\n", pipeNum + 1);
+            printf("    output: pipe to stage %i\n", pipeNum + 1);
         }else{
-	  //printf("    output: %s\n", output);
+            printf("    output: %s\n", output);
 	    if(strcmp(output, "original stdout")){
 	        stg->output = output;
 	    }
@@ -63,11 +63,11 @@ struct stage *pipePrint(int pipeNum, char *input, char *output,
             }
         }while((cur = strchr(cur, ' ')) != NULL);
         
-        //printf("      argc: %i\n", countSpace);
-        //printf("      argv: ");
+        printf("      argc: %i\n", countSpace);
+        printf("      argv: ");
         for(; i < countSpace; i++){
-	  //printf("\"%s\"", argumentsList[i]);
-	  //(i == countSpace - 1) ? printf("\n") : printf(",");
+            printf("\"%s\"", argumentsList[i]);
+            (i == countSpace - 1) ? printf("\n") : printf(",");
 	    /*Tetiraty operand to check for end of line*/
         }
         stg->argumentCount = countSpace;
@@ -301,7 +301,7 @@ struct stage **parseline(char *orig){
     }
     
     if(scanline(orig)){
-      //printf("\n");
+        printf("\n");
         return correctString(orig);
     }
     perror("failed to parse pipeline\n");
