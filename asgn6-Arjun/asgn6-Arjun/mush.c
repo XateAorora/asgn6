@@ -140,7 +140,9 @@ int main(int argc, char *argv[]){
 	dup2(terminal, STDOUT_FILENO);
 	if (exit == 0){
 		if (argv[2] !=NULL){
-			fileRead(orig, filePtr);
+			if (fileRead(orig, filePtr) == -1){
+				exited = 1;	
+			}
 		}
 		else{
 	    		printf("8-D ");
