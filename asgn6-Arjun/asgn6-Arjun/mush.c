@@ -139,13 +139,9 @@ int main(int argc, char *argv[]){
 	
 	dup2(keyboard, STDIN_FILENO);
 	dup2(terminal, STDOUT_FILENO);
-	if(argc == 1){
+	if (exit == 0){
 	    printf("8-D ");
-	}
-	if(argc == 1){
 	    (fgets(orig, INPUTLIMIT + 2, stdin));
-	}else{
-	    fileRead(orig, filePtr);
 	}
     }
     printf("\n");
