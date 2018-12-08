@@ -15,6 +15,7 @@ static int exited = 0;   // MARKER
 
 static void handlr(int signum);
 int cd(char *path);
+int fillToSpace(char *output, int fd);
 
 
 static void handlr(int signum)
@@ -25,8 +26,19 @@ static void handlr(int signum)
 
 int fillToSpace(char *output, int fd){
     int i = 0;
+    int check = 1;
     for(; i < INPUTLIMIT + 2; i++){
-	read(fd, &(output[i]), sizeof(char));
+	check = read(fd, &(output[i]), sizeof(char));
+	if(output[i] == 10){
+	    return 0;
+	}
+	if(check == 0){
+	    return 1;
+	}
+    }
+    perror("Command Line Too Long\n");
+    exit(127);
+    return 0;
 }
     
 int main(int argc, char *argv[]){
@@ -48,21 +60,16 @@ int main(int argc, char *argv[]){
     
 
     char orig[INPUTLIMIT + 2] = {'\0'};
-    FILE *ptr = NULL;
-    int c;
-    size_t *holdSize = malloc(sizeof(size_t));
-    *holdSize = sizeof(char) * (INPUTLIMIT + 2);
+    int fileDiscriptor = -1;
     
     
     if (argc >= 2){
 	//read from file: if EOF, exit = 1;
-	if((c = fscanf(ptr, "%[^\n]", orig)) == EOF ||
-	   c > INPUTLIMIT){
-	    exited = 1;
+	if((fileDiscriptor = open(argv[1], O_RDONLY)) == -1){
+	    perror(argv[1]);
+	    return 1;
 	}
-	if(feof(ptr)){
-	    exited = 1;
-	}
+	exited = fillToSpace(orig, fileDiscriptor);
     }else{
 	do{
 	    interrupted = 0;
@@ -161,14 +168,7 @@ int main(int argc, char *argv[]){
 
 	if (exited == 0){
 	    if (argc >= 2){
-		//read from file: if EOF, exit = 1;
-		if((c = fscanf(ptr, "%[^\n]", orig)) == EOF ||
-		   c > INPUTLIMIT){
-		    exited = 1;
-		}
-		if(feof(ptr)){
-		    exited = 1;
-		}
+		exited = fillToSpace(orig, fileDiscriptor);
 	    }else{
 		do{
 		    interrupted = 0;
@@ -183,7 +183,9 @@ int main(int argc, char *argv[]){
 	}
 		
     }
-    printf("\n");
+    if(argc == 1){
+	    printf("\n");
+    }
     return 1;
 }
 
