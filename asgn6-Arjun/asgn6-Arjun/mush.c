@@ -8,10 +8,28 @@
 #include <signal.h>
 #include "stage.h"
 #define INPUTLIMIT 512
+#define CHILDERROR 127
 
 static int interrupted = 0;
+static int exited = 0;   // MARKER
+
 static void handlr(int signum);
 int cd(char *path);
+
+int fileRead(char *output, int input);
+
+int fileRead(char *output, int input){
+    char wordHold[INPUTLIMIT + 1] = {'\0'};
+    int i = 0;
+    for(; i < INPUTLIMIT ; i++){
+	read(input, &(wordHold[i]), sizeof(char));
+	if(wordHold[i] == '\n' || wordHold[i] == '\0' || wordHold[i] == EOF){
+	    output = wordHold;
+	    return 1;
+	}
+    }
+    return -1;
+}
 
 static void handlr(int signum)
 {
@@ -19,16 +37,25 @@ static void handlr(int signum)
 }
 
 int main(int argc, char *argv[]){
+    int filePtr = -1;
+    if(argc > 1){
+	filePtr = open(argv[1], O_RDONLY);
+    }
     struct sigaction sahint;
     sahint.sa_handler = handlr;
     sigaction(SIGINT, &sahint, NULL);
     int terminal = dup(1);
     int keyboard = dup(0);
-    if (isatty(fileno(stdin)) || isatty(fileno(stdout))){
+    if ((isatty(fileno(stdin)) || isatty(fileno(stdout))) && (argc == 1)){
 	    printf("8-D ");
     }
     char orig[INPUTLIMIT + 1] = {'\0'};
-    fgets(orig, INPUTLIMIT + 2, stdin);
+    if(argc == 1){
+	(fgets(orig, INPUTLIMIT + 2, stdin));
+    }else{
+	fileRead(orig, filePtr);
+    }
+    exited = feof(stdin);
     if(!strcmp(orig, "end\n")){
 	return 1;
     }
@@ -38,20 +65,24 @@ int main(int argc, char *argv[]){
     sigemptyset (&x);
     sigaddset(&x, SIGINT);
     
-    do{
+    while(exited == 0){
 	int prevPipe[2] = { 0 };
 	int curPipe[2] = { 0 };
 	struct stage **stages = parseline(orig);
 	if(stages != NULL){
 	    if(!strcmp(stages[0]->argumentVar[0], "cd")){
-		cd(stages[0]->argumentVar[1]);
+		char *path = NULL;
+		if(stages[0]->argumentCount > 1){
+		    path = stages[0]->argumentVar[1];
+		}
+		cd(path);
 	    }
 	    pid_t childAddress;
 	    int i;
 	    int output = -1;
 	    int input = -1;
 	    sigprocmask(SIG_BLOCK, &x, NULL);
-	    for(i = 0; stages[i] != NULL || interrupted == 0; i++){
+	    for(i = 0; stages[i] != NULL && interrupted == 0; i++){
 		if(stages[i + 1] != NULL){
 		    if(pipe(curPipe) == -1){
 			perror("Pipe Fails\n");
@@ -68,7 +99,7 @@ int main(int argc, char *argv[]){
 			input = open(stages[i]->input, O_RDONLY);
 			dup2(input, STDIN_FILENO);
 		    }
-
+		    
 		    if(stages[i + 1] != NULL){
 			printf("reading out\n");
 			close(curPipe[0]);
@@ -81,12 +112,17 @@ int main(int argc, char *argv[]){
 		    }
 		    sigprocmask(SIG_UNBLOCK, &x, NULL);
 		    execvp(stages[i]->argumentVar[0], stages[i]->argumentVar);
+		    exit(CHILDERROR);
 		}else{
 		    sigprocmask(SIG_UNBLOCK, &x, NULL);
-		    int check;
+		    int check = -1;
 		    close(prevPipe[0]);
 		    close(prevPipe[1]);
 		    waitpid(childAddress, &check, WCONTINUED);
+		    if(check == 127){
+			perror("Child Process Failed!");
+			exit(127);
+		    }
 		    printf("Process Complete\n");
 		    if(pipe(prevPipe) == -1){
 			perror("Pipe Fails\n");
@@ -103,13 +139,24 @@ int main(int argc, char *argv[]){
 	
 	dup2(keyboard, STDIN_FILENO);
 	dup2(terminal, STDOUT_FILENO);
-	printf("8-D ");
-	fgets(orig, INPUTLIMIT + 2, stdin);
-    }while(strcmp(orig, "^D"));
+	if(argc == 1){
+	    printf("8-D ");
+	}
+	if(argc == 1){
+	    (fgets(orig, INPUTLIMIT + 2, stdin));
+	}else{
+	    fileRead(orig, filePtr);
+	}
+    }
+    printf("\n");
     return 1;
 }
 
 int cd(char *pth){
+    if(pth == NULL){
+	chdir(getenv("HOME"));
+	return 1;
+    }
     char path[INPUTLIMIT];
     char *NewLine = strchr(pth, '\n');
     if(NewLine) {
@@ -121,14 +168,12 @@ int cd(char *pth){
         getcwd(cwd,sizeof(cwd));
         strcat(cwd,"/");
         strcat(cwd,path);
-        int a = chdir(cwd);
-        if (a == -1){
+        if(chdir(cwd) == -1){
             return 1;
         }
     }
     else{
-        int b=chdir(pth);
-        if (b == -1){
+        if (chdir(pth) == -1){
             perror("chdir");
             return 1;
         }
